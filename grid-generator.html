@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Настраиваемая сетка для печати</title>
+    <style>
+        :root {
+            --cell-width: 1;
+            --cell-height: 1;
+            --size-multiplier: 1;
+            --final-cell-width: calc(var(--cell-width) * var(--size-multiplier) * 1cm);
+            --final-cell-height: calc(var(--cell-height) * var(--size-multiplier) * 1cm);
+            --grid-color: #CCCCCC;
+            --grid-border-width: 1px;
+            --page-margin: 0.5;
+            --page-width: 210mm;
+            --page-height: 297mm;
+            --grid-columns: 1;
+            --grid-rows: 1;
+        }
+
+        @media print {
+            @page {
+                margin: 0;
+                size: var(--page-width) var(--page-height);
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .controls, .grid-info {
+                display: none;
+            }
+            .page-container {
+                padding: 0 !important;
+            }
+            .page-preview {
+                transform: none !important;
+                box-shadow: none !important;
+                margin: var(--page-margin)cm !important;
+            }
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            margin: 0;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-preview {
+            width: var(--page-width);
+            height: var(--page-height);
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transform-origin: center;
+            transform: scale(0.7);
+            position: relative;
+            margin: 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-columns), var(--final-cell-width));
+            grid-template-rows: repeat(var(--grid-rows), var(--final-cell-height));
+            background-color: white;
+            border: var(--grid-border-width) solid var(--grid-color);
+            margin: 0;
+        }
+
+        .grid-cell {
+            border-right: var(--grid-border-width) solid var(--grid-color);
+            border-bottom: var(--grid-border-width) solid var(--grid-color);
+            min-width: var(--final-cell-width);
+            min-height: var(--final-cell-height);
+        }
+
+        .grid-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .control-item {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        input[type="number"],
+        input[type="color"],
+        select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div class="control-group">
+            <h3>Размер бумаги</h3>
+            <div class="control-item">
+                <label>Формат</label>
+                <select id="pageSize">
+                    <option value="A4">A4 (210×297 мм)</option>
+                    <option value="A3">A3 (297×420 мм)</option>
+                    <option value="A5">A5 (148×210 мм)</option>
+                    <option value="Letter">Letter (216×279 мм)</option>
+                    <option value="Legal">Legal (216×356 мм)</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>Ориентация</label>
+                <select id="pageOrientation">
+                    <option value="portrait">Книжная</option>
+                    <option value="landscape">Альбомная</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Размеры ячейки</h3>
+            <div class="control-item">
+                <label>Ширина (см)</label>
+                <input type="number" id="cellWidth" value="1" min="0.1" max="10" step="0.1">
+            </div>
+            <div class="control-item">
+                <label>Высота (см)</label>
+                <input type="number" id="cellHeight" value="1" min="0.1" max="10" step="0.1">
+            </div>
+            <div class="control-item">
+                <label>Множитель размера: <span id="multiplierValue">1</span></label>
+                <input type="range" id="sizeMultiplier" min="0.5" max="10" step="0.1" value="1">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Линии</h3>
+            <div class="control-item">
+                <label>Цвет линий</label>
+                <input type="color" id="gridColor" value="#CCCCCC">
+            </div>
+            <div class="control-item">
+                <label>Толщина линий (px): <span id="borderWidthValue">1</span></label>
+                <input type="range" id="borderWidth" min="0.5" max="5" step="0.5" value="1">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Выравнивание</h3>
+            <div class="control-item">
+                <label>По горизонтали</label>
+                <select id="horizontalAlign">
+                    <option value="flex-start">Слева</option>
+                    <option value="center" selected>По центру</option>
+                    <option value="flex-end">Справа</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>По вертикали</label>
+                <select id="verticalAlign">
+                    <option value="flex-start">Сверху</option>
+                    <option value="center" selected>По центру</option>
+                    <option value="flex-end">Снизу</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Поля страницы</h3>
+            <div class="control-item">
+                <label>Поля (см): <span id="marginValue">0.5</span></label>
+                <input type="range" id="pageMargin" min="0" max="3" step="0.1" value="0.5">
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="page-preview">
+            <div class="grid-container"></div>
+            <div class="grid-info">
+                Размер сетки: <span id="gridSize">0 × 0</span> ячеек
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PAGE_SIZES = {
+            'A4': { width: 210, height: 297 },
+            'A3': { width: 297, height: 420 },
+            'A5': { width: 148, height: 210 },
+            'Letter': { width: 216, height: 279 },
+            'Legal': { width: 216, height: 356 }
+        };
+
+        function getElement(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.error(`Element with id "${id}" not found`);
+                return null;
+            }
+            return element;
+        }
+
+        function getValue(id, defaultValue = 0) {
+            const element = getElement(id);
+            return element ? element.value : defaultValue;
+        }
+
+        function calculateGridDimensions() {
+            const format = getValue('pageSize', 'A4');
+            const orientation = getValue('pageOrientation', 'portrait');
+            const dimensions = PAGE_SIZES[format];
+            
+            let pageWidth = orientation === 'landscape' ? dimensions.height : dimensions.width;
+            let pageHeight = orientation === 'landscape' ? dimensions.width : dimensions.height;
+            
+            const cellWidth = parseFloat(getValue('cellWidth', 1)) * 10;
+            const cellHeight = parseFloat(getValue('cellHeight', 1)) * 10;
+            const multiplier = parseFloat(getValue('sizeMultiplier', 1));
+            const margin = parseFloat(getValue('pageMargin', 0.5)) * 10;
+            
+            const availableWidth = pageWidth - (margin * 2);
+            const availableHeight = pageHeight - (margin * 2);
+            
+            const finalCellWidth = cellWidth * multiplier;
+            const finalCellHeight = cellHeight * multiplier;
+            
+            const columns = Math.floor(availableWidth / finalCellWidth);
+            const rows = Math.floor(availableHeight / finalCellHeight);
+            
+            return { columns, rows };
+        }
+
+        function updateGrid() {
+            const root = document.documentElement;
+            const container = document.querySelector('.grid-container');
+            if (!container) return;
+
+            const parentContainer = container.parentElement;
+            
+            root.style.setProperty('--cell-width', getValue('cellWidth', 1));
+            root.style.setProperty('--cell-height', getValue('cellHeight', 1));
+            root.style.setProperty('--size-multiplier', getValue('sizeMultiplier', 1));
+            root.style.setProperty('--grid-color', getValue('gridColor', '#CCCCCC'));
+            root.style.setProperty('--grid-border-width', getValue('borderWidth', 1) + 'px');
+            root.style.setProperty('--page-margin', getValue('pageMargin', 0.5));
+
+            updatePageSize();
+            
+            const { columns, rows } = calculateGridDimensions();
+            root.style.setProperty('--grid-columns', columns);
+            root.style.setProperty('--grid-rows', rows);
+            
+            const gridSizeElement = getElement('gridSize');
+            if (gridSizeElement) {
+                gridSizeElement.textContent = `${columns} × ${rows}`;
+            }
+            
+            if (parentContainer) {
+                parentContainer.style.justifyContent = getValue('horizontalAlign', 'center');
+                parentContainer.style.alignItems = getValue('verticalAlign', 'center');
+            }
+
+            updateDisplayValues();
+            createGrid(columns, rows);
+        }
+
+        function updateDisplayValues() {
+            const multiplierValue = getElement('multiplierValue');
+            const borderWidthValue = getElement('borderWidthValue');
+            const marginValue = getElement('marginValue');
+
+            if (multiplierValue) multiplierValue.textContent = getValue('sizeMultiplier', 1);
+            if (borderWidthValue) borderWidthValue.textContent = getValue('borderWidth', 1);
+            if (marginValue) marginValue.textContent = getValue('pageMargin', 0.5);
+        }
+
+        function createGrid(columns, rows) {
+            const container = document.querySelector('.grid-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+            
+            const totalCells = columns * rows;
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                container.appendChild(cell);
+            }
+
+            const existingStyle = document.getElementById('dynamic-grid-style');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+
+            const style = document.createElement('style');
+            style.id = 'dynamic-grid-style';
+            style.textContent = `
+                .grid-cell:nth-child(${columns}n) {
+                    border-right: none;
+                }
+                .grid-cell:nth-child(n+${columns * (rows - 1) + 1}):nth-child(-n+${totalCells}) {
+                    border-bottom: none;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function updatePageSize() {
+            const format = getValue('pageSize', 'A4');
+            const orientation = getValue('pageOrientation', 'portrait');
+            const dimensions = PAGE_SIZES[format];
+            
+            let width = dimensions.width + 'mm';
+            let height = dimensions.height + 'mm';
+            
+            if (orientation === 'landscape') {
+                [width, height] = [height, width];
+            }
+            
+            document.documentElement.style.setProperty('--page-width', width);
+            document.documentElement.style.setProperty('--page-height', height);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', updateGrid);
+                input.addEventListener('change', updateGrid);
+            });
+
+            updateGrid();
+        });
+    </script>
+</body>
+</html>
