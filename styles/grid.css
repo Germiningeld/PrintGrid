@@ -1,0 +1,25 @@
+:root {
+  --cell-width: 1;
+  --cell-height: 1;
+  --size-multiplier: 1;
+  --final-cell-width: calc(var(--cell-width) * var(--size-multiplier) * 1cm);
+  --final-cell-height: calc(var(--cell-height) * var(--size-multiplier) * 1cm);
+  --grid-color: #cccccc;
+  --grid-border-width: 1px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), var(--final-cell-width));
+  grid-template-rows: repeat(var(--grid-rows), var(--final-cell-height));
+  background-color: white;
+  border: var(--grid-border-width) solid var(--grid-color);
+  margin: 0;
+}
+
+.grid-cell {
+  border-right: var(--grid-border-width) solid var(--grid-color);
+  border-bottom: var(--grid-border-width) solid var(--grid-color);
+  min-width: var(--final-cell-width);
+  min-height: var(--final-cell-height);
+}

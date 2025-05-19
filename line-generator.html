@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Настраиваемая линованная бумага</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/line.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/line.js"></script>
+</head>
+<body>
+    <nav class="nav">
+        <a href="grid-generator.html" class="nav-link">Линейная сетка</a>
+        <a href="dot-grid-generator.html" class="nav-link">Точечная сетка</a>
+        <a href="line-generator.html" class="nav-link active">Линованная бумага</a>
+    </nav>
+    <div class="controls">
+        <div class="control-group">
+            <h3>Размер бумаги</h3>
+            <div class="control-item">
+                <label>Формат</label>
+                <select id="pageSize">
+                    <option value="A4">A4 (210×297 мм)</option>
+                    <option value="A3">A3 (297×420 мм)</option>
+                    <option value="A5">A5 (148×210 мм)</option>
+                    <option value="Letter">Letter (216×279 мм)</option>
+                    <option value="Legal">Legal (216×356 мм)</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>Ориентация</label>
+                <select id="pageOrientation">
+                    <option value="portrait">Книжная</option>
+                    <option value="landscape">Альбомная</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Основные линии</h3>
+            <div class="settings-block">
+                <div class="control-item">
+                    <label>Отступ до первой линии (мм)</label>
+                    <input type="number" id="initialOffset" value="0" min="0" max="100" step="0.5">
+                </div>
+                <div class="control-item">
+                    <label>Отступ (мм)</label>
+                    <input type="number" id="lineSpacing" value="8" min="1" max="50" step="0.5">
+                </div>
+                <div class="control-item">
+                    <label>Цвет линий</label>
+                    <input type="color" id="lineColor" value="#CCCCCC">
+                </div>
+                <div class="control-item">
+                    <label>Толщина линий (px): <span id="lineWidthValue">1</span></label>
+                    <input type="range" id="lineWidth" min="0.5" max="5" step="0.5" value="1">
+                </div>
+                <div class="control-item">
+                    <label>Стиль линий</label>
+                    <select id="lineStyle">
+                        <option value="solid">Сплошная</option>
+                        <option value="dashed">Пунктирная</option>
+                        <option value="dotted">Точечная</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="additionalLinesList"></div>
+        <div class="control-item">
+            <button id="addLineSet" class="add-button">+ Добавить линию</button>
+        </div>
+
+        <div class="control-group">
+            <h3>Наклонные линии</h3>
+            <div class="control-item">
+                <label>
+                    <input type="checkbox" id="showSlantedLines">
+                    Показать наклонные линии
+                </label>
+            </div>
+            <div class="slanted-settings" style="display: none;">
+                <div class="control-item">
+                    <label>Угол наклона (градусы): <span id="slantAngleValue">0</span></label>
+                    <input type="range" id="slantAngle" min="-90" max="90" step="5" value="0">
+                </div>
+                <div class="control-item">
+                    <label>Расстояние между наклонными (мм): <span id="slantSpacingValue">30</span></label>
+                    <input type="number" id="slantSpacing" value="30" min="1" max="100" step="1">
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <h3>Поля страницы</h3>
+            <div class="control-item">
+                <label>Поля (см): <span id="marginValue">0.5</span></label>
+                <input type="range" id="pageMargin" min="0" max="5" step="0.1" value="0.5">
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="page-preview">
+            <div class="line-container"></div>
+            <div class="grid-info">
+                Количество линий: <span id="lineCount">0</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

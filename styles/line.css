@@ -1,0 +1,103 @@
+:root {
+  --line-spacing: 8mm;
+  --line-color: #cccccc;
+  --line-width: 1px;
+  --line-style: solid;
+  --slant-angle: 0deg;
+  --slant-spacing: 30mm;
+  --additional-line-color: #808080;
+  --additional-line-width: 1.5px;
+}
+
+.line-container {
+  position: relative;
+  width: calc(100% - var(--page-margin) * 2cm);
+  height: calc(100% - var(--page-margin) * 2cm);
+  margin: calc(var(--page-margin) * 1cm);
+  background-color: white;
+  overflow: hidden;
+}
+
+.slanted-lines-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%) rotate(var(--slant-angle));
+}
+
+.horizontal-lines-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+.horizontal-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: var(--line-width) var(--line-style) var(--line-color);
+}
+
+.horizontal-line.additional {
+  border-top-width: var(--additional-line-width);
+  border-top-color: var(--additional-line-color);
+}
+
+.slanted-line {
+  position: absolute;
+  height: 0;
+  border-top: var(--line-width) var(--line-style) var(--line-color);
+  transform-origin: center;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.vertical-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--line-width);
+  background-color: var(--line-color);
+  border-left: var(--line-width) var(--line-style) var(--line-color);
+}
+
+.margin-line {
+  position: absolute;
+  background-color: var(--line-color);
+}
+
+.margin-line.left {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--line-width);
+  border-left: var(--line-width) solid var(--line-color);
+}
+
+.margin-line.right {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--line-width);
+  border-right: var(--line-width) solid var(--line-color);
+}
+
+.margin-line.top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--line-width);
+  border-top: var(--line-width) solid var(--line-color);
+}
+
+.margin-line.bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--line-width);
+  border-bottom: var(--line-width) solid var(--line-color);
+}
